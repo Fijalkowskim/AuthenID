@@ -3,6 +3,7 @@ package com.fijalkowskim.authenid.bootstrap;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
@@ -13,6 +14,7 @@ import org.springframework.security.oauth2.server.authorization.settings.ClientS
 import org.springframework.stereotype.Component;
 
 @Component
+@Order(40)
 @RequiredArgsConstructor
 @ConditionalOnProperty(
         name = "authenid.bootstrap.clients.enabled",
@@ -35,11 +37,11 @@ public class ClientBootstrapTask implements BootstrapTask {
 
         RegisteredClient demoClient = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("demo-client")
-                .clientSecret(passwordEncoder.encode("demo-secret"))
+                .clientSecret(passwordEncoder.encode("secret"))
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                .redirectUri("http://127.0.0.1:3000/callback")
+                .redirectUri("http://localhost:9000/callback")
                 .scope(OidcScopes.OPENID)
                 .clientSettings(ClientSettings.builder()
                         .requireProofKey(true)

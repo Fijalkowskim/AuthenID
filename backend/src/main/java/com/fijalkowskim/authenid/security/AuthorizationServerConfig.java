@@ -1,9 +1,19 @@
 package com.fijalkowskim.authenid.security;
 
+import com.fijalkowskim.authenid.model.user.User;
+import com.fijalkowskim.authenid.repository.user.UserRepository;
+import com.fijalkowskim.authenid.security.oidc.UserOidcClaimsMapper;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.util.Map;
+import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -11,38 +21,45 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
-
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
-import java.util.UUID;
+import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Configuration
+@RequiredArgsConstructor
 public class AuthorizationServerConfig {
 
-    /**
-     * Security filter chain for OAuth 2.1 / OpenID Connect 1.0 authorization server endpoints.
-     */
+    private final UserRepository userRepository;
+    private final UserOidcClaimsMapper userOidcClaimsMapper;
+
     @Bean
     @Order(1)
-    public org.springframework.security.web.SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
                 OAuth2AuthorizationServerConfigurer.authorizationServer();
 
+        RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
+
         http
-                .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
-                .with(authorizationServerConfigurer, authorizationServer ->
-                        authorizationServer.oidc(Customizer.withDefaults())
-                );
+                .securityMatcher(endpointsMatcher)
+                .with(authorizationServerConfigurer, server ->
+                        server.oidc(Customizer.withDefaults())
+                )
+                .authorizeHttpRequests(authorize -> authorize
+                        .anyRequest().authenticated()
+                )
+                .exceptionHandling(exceptions ->
+                        exceptions.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
+                )
+                .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher));
 
         return http.build();
     }
 
-    /**
-     * JSON Web Key set containing an RSA key used to sign JWTs.
-     */
     @Bean
     public JWKSource<SecurityContext> jwkSource() {
         RSAKey rsaKey = generateRsa();
@@ -50,20 +67,34 @@ public class AuthorizationServerConfig {
         return (jwkSelector, securityContext) -> jwkSelector.select(jwkSet);
     }
 
-    /**
-     * Decoder for JWT tokens based on the configured JWK source.
-     */
     @Bean
     public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
-        return org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
+        return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
     }
 
-    /**
-     * Settings for the Authorization Server (endpoints, issuer, etc.).
-     */
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder().build();
+    }
+
+    @Bean
+    public OAuth2TokenCustomizer<JwtEncodingContext> tokenCustomizer() {
+        return context -> {
+            if (context.getTokenType() == null) {
+                return;
+            }
+            String tokenType = context.getTokenType().getValue();
+            if (!"id_token".equals(tokenType) && !"access_token".equals(tokenType)) {
+                return;
+            }
+
+            String username = context.getPrincipal().getName();
+            User user = userRepository.findWithRolesByUsername(username)
+                    .orElseThrow(() -> new IllegalStateException("User not found for principal " + username));
+
+            Map<String, Object> claims = userOidcClaimsMapper.buildIdTokenClaims(user);
+            claims.forEach(context.getClaims()::claim);
+        };
     }
 
     private static RSAKey generateRsa() {
@@ -79,7 +110,7 @@ public class AuthorizationServerConfig {
                     .keyID(UUID.randomUUID().toString())
                     .build();
         } catch (Exception ex) {
-            throw new IllegalStateException("Failed to generate RSA key", ex);
+            throw new IllegalStateException("Failed to generate RSA key pair", ex);
         }
     }
 }
