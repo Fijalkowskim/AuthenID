@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Account — TechParts B2B</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/app.css}"/>
+</head>
+<body class="bg-light">
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container py-5">
+    <div class="mb-4">
+        <h4 class="fw-bold mb-1">Account Management</h4>
+        <p class="text-muted small">Accessible by Admins only</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h6 class="fw-semibold mb-3">Company Information</h6>
+                    <dl class="row mb-0" style="font-size:14px">
+                        <dt class="col-5 text-muted">Company</dt>
+                        <dd class="col-7">TechParts sp. z o.o.</dd>
+                        <dt class="col-5 text-muted">VAT ID</dt>
+                        <dd class="col-7">PL1234567890</dd>
+                        <dt class="col-5 text-muted">Account type</dt>
+                        <dd class="col-7"><span class="badge bg-dark">B2B Premium</span></dd>
+                        <dt class="col-5 text-muted">Credit limit</dt>
+                        <dd class="col-7">$50,000</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h6 class="fw-semibold mb-3">Company Users</h6>
+                    <table class="table table-sm mb-0" style="font-size:13px">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>buyer1</td>
+                                <td><span class="badge bg-light text-dark border">B2B_BUYER</span></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>buyer2</td>
+                                <td><span class="badge bg-light text-dark border">B2B_BUYER</span></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>sales1</td>
+                                <td><span class="badge bg-light text-dark border">B2B_SALES</span></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td th:text="${user.username()}"></td>
+                                <td><span class="badge bg-dark">B2B_ADMIN</span></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 p-4 bg-white border rounded" style="max-width:480px">
+        <p class="fw-semibold small text-uppercase text-muted mb-2" style="letter-spacing:.05em">Identity Provider</p>
+        <p class="text-muted small mb-1">Authentication managed by <strong>AuthenID</strong></p>
+        <p class="text-muted small mb-0">Protocol: OpenID Connect (Authorization Code + PKCE)</p>
+    </div>
+</div>
+</body>
+</html>

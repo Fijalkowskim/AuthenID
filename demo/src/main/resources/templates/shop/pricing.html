@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Pricing — TechParts B2B</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/app.css}"/>
+</head>
+<body class="bg-light">
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container py-5">
+    <div class="mb-4">
+        <h4 class="fw-bold mb-1">Pricing</h4>
+        <p class="text-muted small">Accessible by Sales team and Admins</p>
+    </div>
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0" style="font-size:14px">
+                <thead class="table-light">
+                    <tr>
+                        <th class="px-4 py-3">Product</th>
+                        <th class="px-4 py-3">Tier</th>
+                        <th class="px-4 py-3">Unit Price</th>
+                        <th class="px-4 py-3">Discount</th>
+                        <th class="px-4 py-3">Min Qty</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="r : ${rules}">
+                        <td class="px-4 py-3 fw-semibold" th:text="${r.product()}"></td>
+                        <td class="px-4 py-3">
+                            <span class="badge"
+                                th:classappend="${r.tier() == 'Volume'} ? 'bg-dark' : 'bg-light text-dark border'"
+                                th:text="${r.tier()}"></span>
+                        </td>
+                        <td class="px-4 py-3" th:text="${r.unitPrice()}"></td>
+                        <td class="px-4 py-3 text-success fw-semibold" th:text="${r.discount()}"></td>
+                        <td class="px-4 py-3 text-muted" th:text="${r.minQty()}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

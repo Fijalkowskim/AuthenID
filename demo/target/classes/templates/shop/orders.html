@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Orders — TechParts B2B</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/app.css}"/>
+</head>
+<body class="bg-light">
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container py-5">
+    <div class="mb-4">
+        <h4 class="fw-bold mb-1">Orders</h4>
+        <p class="text-muted small">Accessible by Buyers and Admins</p>
+    </div>
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0" style="font-size:14px">
+                <thead class="table-light">
+                    <tr>
+                        <th class="px-4 py-3">Order ID</th>
+                        <th class="px-4 py-3">Product</th>
+                        <th class="px-4 py-3">Qty</th>
+                        <th class="px-4 py-3">Total</th>
+                        <th class="px-4 py-3">Buyer</th>
+                        <th class="px-4 py-3">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="o : ${orders}">
+                        <td class="px-4 py-3 fw-semibold" th:text="${o.id()}"></td>
+                        <td class="px-4 py-3" th:text="${o.product()}"></td>
+                        <td class="px-4 py-3" th:text="${o.qty()}"></td>
+                        <td class="px-4 py-3" th:text="${o.total()}"></td>
+                        <td class="px-4 py-3 text-muted" th:text="${o.buyer()}"></td>
+                        <td class="px-4 py-3">
+                            <span class="badge"
+                                th:classappend="${o.status() == 'Delivered'} ? 'bg-success' : (${o.status() == 'Processing'} ? 'bg-warning text-dark' : (${o.status() == 'Shipped'} ? 'bg-info text-dark' : 'bg-secondary'))"
+                                th:text="${o.status()}"></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

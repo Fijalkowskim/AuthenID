@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Dashboard — TechParts B2B</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/app.css}"/>
+</head>
+<body class="bg-light">
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container py-5">
+    <div class="mb-4">
+        <h4 class="fw-bold mb-1">Welcome, <span th:text="${user.username()}"></span></h4>
+        <p class="text-muted">
+            Role:
+            <span class="badge bg-secondary me-1" th:each="role : ${user.roles()}" th:text="${role}"></span>
+        </p>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-6 col-lg-3">
+            <a href="/catalog" class="text-decoration-none">
+                <div class="card border-0 shadow-sm h-100 card-hover">
+                    <div class="card-body p-4">
+                        <div class="text-muted small fw-semibold text-uppercase mb-2" style="letter-spacing:.05em">Product Catalog</div>
+                        <p class="text-muted small mb-0">Browse available components and specifications</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pb-3 px-4">
+                        <span class="text-dark small">View catalog &rarr;</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-3" th:if="${user.hasRole('B2B_BUYER') or user.isAdmin()}">
+            <a href="/orders" class="text-decoration-none">
+                <div class="card border-0 shadow-sm h-100 card-hover">
+                    <div class="card-body p-4">
+                        <div class="text-muted small fw-semibold text-uppercase mb-2" style="letter-spacing:.05em">Orders</div>
+                        <p class="text-muted small mb-0">View and manage your purchase orders</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pb-3 px-4">
+                        <span class="text-dark small">Manage orders &rarr;</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-3" th:if="${user.isSales() or user.isAdmin()}">
+            <a href="/pricing" class="text-decoration-none">
+                <div class="card border-0 shadow-sm h-100 card-hover">
+                    <div class="card-body p-4">
+                        <div class="text-muted small fw-semibold text-uppercase mb-2" style="letter-spacing:.05em">Pricing</div>
+                        <p class="text-muted small mb-0">Configure prices, discounts and tier rates</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pb-3 px-4">
+                        <span class="text-dark small">Manage pricing &rarr;</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-3" th:if="${user.isAdmin()}">
+            <a href="/account" class="text-decoration-none">
+                <div class="card border-0 shadow-sm h-100 card-hover">
+                    <div class="card-body p-4">
+                        <div class="text-muted small fw-semibold text-uppercase mb-2" style="letter-spacing:.05em">Account Management</div>
+                        <p class="text-muted small mb-0">Manage company users, access and settings</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pb-3 px-4">
+                        <span class="text-dark small">Manage account &rarr;</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="mt-5 p-4 bg-white border rounded" style="max-width:560px">
+        <p class="fw-semibold mb-2 small text-uppercase text-muted" style="letter-spacing:.05em">Your access level</p>
+        <ul class="mb-0 text-muted small">
+            <li>Product Catalog — <strong>all authenticated users</strong></li>
+            <li th:if="${user.hasRole('B2B_BUYER') or user.isAdmin()}">Orders — <strong>buyers and admins</strong></li>
+            <li th:if="${user.isSales() or user.isAdmin()}">Pricing — <strong>sales team and admins</strong></li>
+            <li th:if="${user.isAdmin()}">Account Management — <strong>admins only</strong></li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

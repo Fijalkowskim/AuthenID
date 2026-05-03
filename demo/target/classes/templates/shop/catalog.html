@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Catalog — TechParts B2B</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/app.css}"/>
+</head>
+<body class="bg-light">
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container py-5">
+    <div class="mb-4">
+        <h4 class="fw-bold mb-1">Product Catalog</h4>
+        <p class="text-muted small">Visible to all authenticated users</p>
+    </div>
+    <div class="row g-3">
+        <div class="col-md-4" th:each="p : ${products}">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-light text-dark border" th:text="${p.category()}"></span>
+                        <span class="fw-bold" th:text="${p.price()}"></span>
+                    </div>
+                    <h6 class="fw-semibold mb-1" th:text="${p.name()}"></h6>
+                    <p class="text-muted small mb-1">SKU: <span th:text="${p.sku()}"></span></p>
+                    <p class="text-muted small mb-0">In stock: <span th:text="${p.stock()}"></span> units</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
