@@ -1,0 +1,15 @@
+meta {
+  name: Usuń rolę
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{base_url}}/api/admin/roles/3
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

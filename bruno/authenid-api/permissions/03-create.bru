@@ -1,0 +1,22 @@
+meta {
+  name: Utwórz uprawnienie
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/api/admin/permissions
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "AUDIT_READ",
+    "description": "Allows reading audit logs"
+  }
+}

@@ -1,0 +1,11 @@
+meta {
+  name: OIDC Discovery
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/.well-known/openid-configuration
+  body: none
+  auth: none
+}

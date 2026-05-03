@@ -1,0 +1,15 @@
+meta {
+  name: Pobierz uprawnienie po ID
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/api/admin/permissions/1
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

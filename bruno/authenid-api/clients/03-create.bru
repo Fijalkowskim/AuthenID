@@ -1,0 +1,26 @@
+meta {
+  name: Utwórz klienta OAuth
+  type: http
+  seq: 3
+}
+
+# Zwraca clientSecret w plain-text — zapisz go, nie można go odczytać ponownie!
+
+post {
+  url: {{base_url}}/api/admin/clients
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "clientId": "my-spa",
+    "clientName": "Moja aplikacja SPA",
+    "redirectUris": ["http://localhost:3000/callback"],
+    "scopes": ["openid", "profile", "email"]
+  }
+}

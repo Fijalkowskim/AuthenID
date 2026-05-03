@@ -1,0 +1,23 @@
+meta {
+  name: Utwórz rolę
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/api/admin/roles
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "AUDITOR",
+    "description": "Read-only auditor role",
+    "permissionNames": ["USER_READ", "CLIENT_READ"]
+  }
+}

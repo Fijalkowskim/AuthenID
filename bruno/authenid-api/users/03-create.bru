@@ -1,0 +1,25 @@
+meta {
+  name: Utwórz użytkownika
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/api/admin/users
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "username": "jan.kowalski",
+    "password": "haslo1234",
+    "email": "jan.kowalski@example.com",
+    "phoneNumber": "+48123456789",
+    "roleNames": ["USER"]
+  }
+}

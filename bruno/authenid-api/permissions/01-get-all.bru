@@ -1,0 +1,15 @@
+meta {
+  name: Pobierz wszystkie uprawnienia
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/api/admin/permissions
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

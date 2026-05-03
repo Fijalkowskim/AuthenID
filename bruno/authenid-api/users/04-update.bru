@@ -1,0 +1,26 @@
+meta {
+  name: Zaktualizuj użytkownika
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{base_url}}/api/admin/users/2
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "username": "jan.kowalski",
+    "email": "jan.kowalski.new@example.com",
+    "phoneNumber": "+48999000111",
+    "emailVerified": true,
+    "status": "ACTIVE",
+    "roleNames": ["USER"]
+  }
+}

@@ -1,0 +1,15 @@
+meta {
+  name: Pobierz wszystkich użytkowników
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/api/admin/users
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

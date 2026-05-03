@@ -1,0 +1,20 @@
+meta {
+  name: Token Revoke
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{base_url}}/oauth2/revoke
+  body: formUrlEncoded
+  auth: basic
+}
+
+auth:basic {
+  username: {{client_id}}
+  password: {{client_secret}}
+}
+
+body:form-urlencoded {
+  token: {{access_token}}
+}

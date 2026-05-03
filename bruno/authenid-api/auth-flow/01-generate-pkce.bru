@@ -1,0 +1,21 @@
+meta {
+  name: 1 - Open Authorization URL
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/oauth2/authorize
+  body: none
+  auth: none
+}
+
+params:query {
+  response_type: code
+  client_id: {{client_id}}
+  redirect_uri: {{redirect_uri}}
+  scope: openid profile email
+  code_challenge: {{code_challenge}}
+  code_challenge_method: S256
+  state: random-state
+}

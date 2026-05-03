@@ -1,0 +1,14 @@
+services:
+
+  demo:
+    build:
+      context: ../
+      dockerfile: docker/demo/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_AUTHENID_ISSUER_URI: http://host.docker.internal:9000
+      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_AUTHENID_AUTHORIZATION_URI: http://localhost:9000/oauth2/authorize
+      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_AUTHENID_TOKEN_URI: http://host.docker.internal:9000/oauth2/token
+      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_AUTHENID_JWK_SET_URI: http://host.docker.internal:9000/oauth2/jwks
+      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_AUTHENID_USER_INFO_URI: http://host.docker.internal:9000/userinfo

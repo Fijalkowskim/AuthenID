@@ -1,0 +1,58 @@
+services:
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: authenid
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  backend:
+    build:
+      context: ../
+      dockerfile: docker/backend/Dockerfile
+    ports:
+      - "9000:9000"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/authenid?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ../
+      dockerfile: docker/frontend/Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  demo:
+    build:
+      context: ../
+      dockerfile: docker/demo/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_AUTHENID_ISSUER_URI: http://backend:9000
+      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_AUTHENID_AUTHORIZATION_URI: http://localhost:9000/oauth2/authorize
+      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_AUTHENID_TOKEN_URI: http://backend:9000/oauth2/token
+      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_AUTHENID_JWK_SET_URI: http://backend:9000/oauth2/jwks
+      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_AUTHENID_USER_INFO_URI: http://backend:9000/userinfo
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:

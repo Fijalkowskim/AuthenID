@@ -1,0 +1,33 @@
+meta {
+  name: 2 - Exchange Code for Token
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/oauth2/token
+  body: formUrlEncoded
+  auth: basic
+}
+
+auth:basic {
+  username: {{client_id}}
+  password: {{client_secret}}
+}
+
+body:form-urlencoded {
+  grant_type: authorization_code
+  code: WKLEJ_CODE_Z_URL
+  redirect_uri: {{redirect_uri}}
+  code_verifier: {{code_verifier}}
+}
+
+script:post-response {
+  if (res.status === 200) {
+    bru.setVar('access_token', res.body.access_token);
+    if (res.body.refresh_token) {
+      bru.setVar('refresh_token', res.body.refresh_token);
+    }
+    console.log('access_token zapisany do zmiennej środowiskowej');
+  }
+}

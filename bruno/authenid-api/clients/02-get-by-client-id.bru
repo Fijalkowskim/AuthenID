@@ -1,0 +1,15 @@
+meta {
+  name: Pobierz klienta po clientId
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/api/admin/clients/demo-client
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
