@@ -1,9 +1,11 @@
 package com.fijalkowskim.authenid.repository.user;
 
 import com.fijalkowskim.authenid.model.user.User;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
@@ -17,4 +19,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @EntityGraph(attributePaths = {"roles", "roles.permissions"})
     Optional<User> findWithRolesByUsername(String username);
+
+    @Query("SELECT u FROM User u")
+    @EntityGraph(attributePaths = {"roles", "roles.permissions"})
+    List<User> findAllWithRoles();
 }

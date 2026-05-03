@@ -10,6 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Default implementation of {@link RoleService}.
+ * All write operations run within a transaction; reads use read-only transactions.
+ */
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -37,6 +41,9 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public void delete(Long id) {
+        if (!roleRepository.existsById(id)) {
+            throw new EntityNotFoundException("Role not found");
+        }
         roleRepository.deleteById(id);
     }
 

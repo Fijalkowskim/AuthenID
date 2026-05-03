@@ -13,6 +13,18 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.stereotype.Component;
 
+/**
+ * Bootstrap task that creates default OAuth clients for development and testing
+ * if they do not already exist. Runs at order 40, after users are created.
+ * <p>
+ * Creates three clients:
+ * <ul>
+ *   <li>{@code demo-client} — general-purpose test client</li>
+ *   <li>{@code admin-panel} — React admin panel using Authorization Code + PKCE</li>
+ *   <li>{@code b2b-shop} — B2B demo shop using Authorization Code + PKCE</li>
+ * </ul>
+ * </p>
+ */
 @Component
 @Order(40)
 @RequiredArgsConstructor
@@ -31,6 +43,12 @@ public class ClientBootstrapTask implements BootstrapTask {
      */
     @Override
     public void run() {
+        bootstrapDemoClient();
+        bootstrapAdminPanelClient();
+        bootstrapB2bShopClient();
+    }
+
+    private void bootstrapDemoClient() {
         if (registeredClientRepository.findByClientId("demo-client") != null) {
             return;
         }
@@ -49,5 +67,53 @@ public class ClientBootstrapTask implements BootstrapTask {
                 .build();
 
         registeredClientRepository.save(demoClient);
+    }
+
+    private void bootstrapAdminPanelClient() {
+        if (registeredClientRepository.findByClientId("admin-panel") != null) {
+            return;
+        }
+
+        RegisteredClient adminPanel = RegisteredClient.withId(UUID.randomUUID().toString())
+                .clientId("admin-panel")
+                .clientSecret(passwordEncoder.encode("admin-panel-secret"))
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                .redirectUri("http://localhost:3000/callback")
+                .postLogoutRedirectUri("http://localhost:3000/")
+                .scope(OidcScopes.OPENID)
+                .scope(OidcScopes.PROFILE)
+                .scope("email")
+                .clientSettings(ClientSettings.builder()
+                        .requireProofKey(true)
+                        .build())
+                .build();
+
+        registeredClientRepository.save(adminPanel);
+    }
+
+    private void bootstrapB2bShopClient() {
+        if (registeredClientRepository.findByClientId("b2b-shop") != null) {
+            return;
+        }
+
+        RegisteredClient b2bShop = RegisteredClient.withId(UUID.randomUUID().toString())
+                .clientId("b2b-shop")
+                .clientSecret(passwordEncoder.encode("b2b-shop-secret"))
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                .redirectUri("http://localhost:8080/login/oauth2/code/authenid")
+                .postLogoutRedirectUri("http://localhost:8080/")
+                .scope(OidcScopes.OPENID)
+                .scope(OidcScopes.PROFILE)
+                .scope("email")
+                .clientSettings(ClientSettings.builder()
+                        .requireProofKey(false)
+                        .build())
+                .build();
+
+        registeredClientRepository.save(b2bShop);
     }
 }

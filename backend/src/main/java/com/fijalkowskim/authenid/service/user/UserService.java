@@ -4,6 +4,10 @@ import com.fijalkowskim.authenid.model.user.User;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service interface for user management operations.
+ * Provides CRUD operations and lookup methods for {@link User} entities.
+ */
 public interface UserService {
 
     User create(User user);

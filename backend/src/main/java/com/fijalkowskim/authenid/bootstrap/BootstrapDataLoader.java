@@ -7,6 +7,10 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.stereotype.Component;
 
+/**
+ * ApplicationRunner that executes all {@link BootstrapTask} beans on startup,
+ * sorted by their {@code @Order} annotation value.
+ */
 @Component
 @RequiredArgsConstructor
 public class BootstrapDataLoader implements ApplicationRunner {

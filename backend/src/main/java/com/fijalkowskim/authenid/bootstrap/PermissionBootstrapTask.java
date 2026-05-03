@@ -9,6 +9,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+/**
+ * Bootstrap task that creates default permissions (USER_READ, USER_MANAGE, CLIENT_READ, CLIENT_MANAGE)
+ * if they do not already exist. Runs at order 10, before roles and users.
+ */
 @Slf4j
 @Component
 @Order(10)
@@ -28,6 +32,11 @@ public class PermissionBootstrapTask implements BootstrapTask {
         createIfMissing("USER_MANAGE", "Create and update users");
         createIfMissing("CLIENT_READ", "Read OIDC clients");
         createIfMissing("CLIENT_MANAGE", "Create and update OIDC clients");
+        createIfMissing("ORDERS_READ", "View orders");
+        createIfMissing("ORDERS_MANAGE", "Create and manage orders");
+        createIfMissing("PRICING_READ", "View pricing and discounts");
+        createIfMissing("PRICING_MANAGE", "Manage pricing and discounts");
+        createIfMissing("ACCOUNT_MANAGE", "Manage company account");
     }
 
     private Permission createIfMissing(String name, String description) {

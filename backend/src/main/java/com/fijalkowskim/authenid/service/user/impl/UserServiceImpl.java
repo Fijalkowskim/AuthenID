@@ -10,6 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Default implementation of {@link UserService}.
+ * All write operations run within a transaction; reads use read-only transactions.
+ */
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -32,11 +36,26 @@ public class UserServiceImpl implements UserService {
     public User update(Long id, User updated) {
         User existing = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        // Validate email uniqueness when it changes
+        if (!existing.getEmail().equals(updated.getEmail())
+                && userRepository.existsByEmail(updated.getEmail())) {
+            throw new IllegalArgumentException("Email already in use");
+        }
+        // Validate username uniqueness when it changes
+        if (!existing.getUsername().equals(updated.getUsername())
+                && userRepository.existsByUsername(updated.getUsername())) {
+            throw new IllegalArgumentException("Username already in use");
+        }
+
         existing.setEmail(updated.getEmail());
         existing.setUsername(updated.getUsername());
-        existing.setPasswordHash(updated.getPasswordHash());
+        existing.setPhoneNumber(updated.getPhoneNumber());
         existing.setStatus(updated.getStatus());
         existing.setEmailVerified(updated.isEmailVerified());
+        if (updated.getRoles() != null) {
+            existing.setRoles(updated.getRoles());
+        }
         return userRepository.save(existing);
     }
 
@@ -69,7 +88,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<User> findAll() {
-        return userRepository.findAll();
+        return userRepository.findAllWithRoles();
     }
 
     @Override

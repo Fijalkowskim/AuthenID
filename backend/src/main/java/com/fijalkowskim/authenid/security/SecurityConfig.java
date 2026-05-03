@@ -14,6 +14,14 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * Main Spring Security configuration for the application's resource server and form-login flows.
+ * <p>
+ * Configured at {@code @Order(2)} to run after {@code AuthorizationServerConfig} (order 1).
+ * Secures {@code /api/admin/**} endpoints (SYSTEM_ADMIN role required) and enables form-based login.
+ * Also registers a JWT authentication converter that reads roles from the {@code "roles"} claim.
+ * </p>
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -29,6 +37,7 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/login",

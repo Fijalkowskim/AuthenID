@@ -15,6 +15,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Spring Security {@link UserDetailsService} implementation that loads users from the database.
+ * Builds the full authority set by combining role authorities (ROLE_*) and fine-grained permission names.
+ */
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {

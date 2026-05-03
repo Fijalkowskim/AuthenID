@@ -4,6 +4,10 @@ import com.fijalkowskim.authenid.model.role.Role;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service interface for role management operations.
+ * Provides CRUD operations and lookup methods for {@link Role} entities.
+ */
 public interface RoleService {
 
     Role create(Role role);

@@ -29,6 +29,14 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+/**
+ * Spring Authorization Server configuration for OAuth 2.1 and OpenID Connect.
+ * <p>
+ * Configured at {@code @Order(1)} to take precedence over the default security filter chain.
+ * Provides RSA key pair for JWT signing, OIDC support, and a token customizer that injects
+ * user attributes (username, email, roles) into ID tokens and access tokens.
+ * </p>
+ */
 @Configuration
 @RequiredArgsConstructor
 public class AuthorizationServerConfig {
@@ -49,6 +57,7 @@ public class AuthorizationServerConfig {
                 .with(authorizationServerConfigurer, server ->
                         server.oidc(Customizer.withDefaults())
                 )
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authorize -> authorize
                         .anyRequest().authenticated()
                 )

@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
@@ -144,11 +143,5 @@ public class JpaRegisteredClientRepositoryAdapter implements RegisteredClientRep
                 .filter(StringUtils::hasText)
                 .collect(Collectors.toSet());
     }
-
-    private Stream<String> toStream(Iterable<String> values) {
-        if (values == null) {
-            return Stream.empty();
-        }
-        return StreamSupport.stream(values.spliterator(), false);
-    }
 }
+

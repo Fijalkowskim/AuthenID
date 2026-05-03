@@ -10,6 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Default implementation of {@link PermissionService}.
+ * All write operations run within a transaction; reads use read-only transactions.
+ */
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -36,6 +40,9 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public void delete(Long id) {
+        if (!permissionRepository.existsById(id)) {
+            throw new EntityNotFoundException("Permission not found");
+        }
         permissionRepository.deleteById(id);
     }
 

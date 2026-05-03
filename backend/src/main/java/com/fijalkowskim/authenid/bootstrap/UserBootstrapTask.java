@@ -16,6 +16,11 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+/**
+ * Bootstrap task that creates the default admin user if one does not already exist.
+ * The admin password is resolved in order: configured value → random → default "nimda".
+ * Runs at order 30, after roles are created.
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -57,8 +62,32 @@ public class UserBootstrapTask implements BootstrapTask {
         admin.setRoles(Set.of(adminRole));
 
         userRepository.save(admin);
-
         log.info("Bootstrap admin user created. Username: admin, password: {}", rawPassword);
+
+        createB2bUsersIfMissing();
+    }
+
+    private void createB2bUsersIfMissing() {
+        createUserIfMissing("buyer1",   "buyer1@techparts.demo",   "Buyer1234!",  "B2B_BUYER");
+        createUserIfMissing("buyer2",   "buyer2@globaltech.demo",  "Buyer1234!",  "B2B_BUYER");
+        createUserIfMissing("sales1",   "sales1@techparts.demo",   "Sales1234!",  "B2B_SALES");
+        createUserIfMissing("b2badmin", "admin@techparts.demo",    "Admin1234!",  "B2B_ADMIN");
+    }
+
+    private void createUserIfMissing(String username, String email, String password, String roleName) {
+        if (userRepository.findWithRolesByUsername(username).isPresent()) {
+            return;
+        }
+        Role role = roleRepository.findByName(roleName)
+                .orElseThrow(() -> new IllegalStateException("Role not found: " + roleName));
+        User user = new User();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPasswordHash(passwordEncoder.encode(password));
+        user.setStatus(UserStatus.ACTIVE);
+        user.setRoles(Set.of(role));
+        userRepository.save(user);
+        log.info("Bootstrap user created: {} ({})", username, roleName);
     }
 
     private String resolveAdminPassword() {
