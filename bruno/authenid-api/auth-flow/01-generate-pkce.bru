@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{base_url}}/oauth2/authorize
+  url: {{base_url}}/oauth2/authorize?response_type=code&client_id={{client_id}}&redirect_uri={{redirect_uri}}&scope=openid&code_challenge={{code_challenge}}&code_challenge_method=S256&state=random-state
   body: none
   auth: none
 }
@@ -14,7 +14,7 @@ params:query {
   response_type: code
   client_id: {{client_id}}
   redirect_uri: {{redirect_uri}}
-  scope: openid profile email
+  scope: openid
   code_challenge: {{code_challenge}}
   code_challenge_method: S256
   state: random-state

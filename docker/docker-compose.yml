@@ -29,6 +29,12 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/.well-known/openid-configuration"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 60s
 
   frontend:
     build:
@@ -44,7 +50,7 @@ services:
       context: ../
       dockerfile: docker/demo/Dockerfile
     ports:
-      - "8080:8080"
+      - "8081:8080"
     environment:
       SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_AUTHENID_ISSUER_URI: http://backend:9000
       SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_AUTHENID_AUTHORIZATION_URI: http://localhost:9000/oauth2/authorize
@@ -52,7 +58,8 @@ services:
       SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_AUTHENID_JWK_SET_URI: http://backend:9000/oauth2/jwks
       SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_AUTHENID_USER_INFO_URI: http://backend:9000/userinfo
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
 
 volumes:
   mysql_data:
